@@ -1,3 +1,5 @@
+from typing import List, Union
+
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from importlib import import_module
@@ -111,3 +113,42 @@ class Qwen_14B_Chat(BaseLLM):
             output[len(input_ids[0]) - len(output):], skip_special_tokens=True)
         return response
     
+
+class InternLM(BaseLLM):
+    def __init__(self,
+                 model_path='internlm/internlm2_5-7b-chat',
+                 model_name='internlm2_5-7b-chat',
+                 tp: int = 1,
+                 pipeline_cfg=dict(),
+                 max_new_tokens: int = 512,
+                 top_p: float = 0.8,
+                 top_k: float = 40,
+                 temperature: float = 0.8,
+                 repetition_penalty: float = 1.0,
+                 stop_words: List[str] = ['<|im_end|>'],
+                 report=False):
+
+        from lagent.llms import LMDeployPipeline
+        llm = LMDeployPipeline(
+            path=model_path,
+            model_name=model_name,
+            tp=tp,
+            pipeline_cfg=pipeline_cfg,
+            top_p=top_p,
+            top_k=top_k,
+            temperature=temperature,
+            max_new_tokens=max_new_tokens,
+            repetition_penalty=repetition_penalty,
+            stop_words=stop_words)
+        self.llm = llm
+
+        super().__init__(model_name, temperature, max_new_tokens)
+        self.report = report
+
+    def request(self, query: Union[str, List[str]], **gen_params) -> str:
+        if isinstance(query, str):
+            query = [query]
+        query_pattern = "<|im_start|>system\nYou are a helpful assistant.<|im_end|>\n<|im_start|>user\n{query}<|im_end|>\n<|im_start|>assistant\n"
+        query = [query_pattern.format(query=q) for q in query]
+        real_res = self.llm.generate(query)
+        return real_res

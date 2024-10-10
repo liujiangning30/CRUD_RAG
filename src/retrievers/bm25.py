@@ -50,7 +50,7 @@ class CustomBM25Retriever(ABC):
         
         self.embed_model = LangchainEmbedding(self.embed_model)
         service_context = ServiceContext.from_defaults(
-            embed_model=self.embed_model,llm=None,
+            embed_model=self.embed_model, llm=None,
         )
         vector_store = ElasticsearchStore(
             index_name=self.collection_name, es_url=f"{self.es_scheme}://{self.es_host}:{self.es_port}"

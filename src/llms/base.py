@@ -1,5 +1,6 @@
 import copy
 from abc import ABC, abstractmethod
+from typing import List, Union
 
 from loguru import logger
 
@@ -35,12 +36,13 @@ class BaseLLM(ABC):
     def request(self, query:str) -> str:
         return ''
 
-    def safe_request(self, query: str) -> str:
+    def safe_request(self, query: Union[str, List[str]]) -> str:
         """Safely make a request to the language model, handling exceptions."""
         try:
             response = self.request(query)
         except Exception as e:
             logger.warning(repr(e))
-            response = ''
+            if isinstance(query, list):
+                response = [''] * len(query)
         return response
 

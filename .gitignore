@@ -1,4 +1,5 @@
 output*
+data/
 statistics/
 sentence-transformers/
 __pycache__/

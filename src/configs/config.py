@@ -1,5 +1,5 @@
 # use openai api to request gpt(Optional)
-GPT_api_key = ''  # openai.api_key
+GPT_api_key = '123'  # openai.api_key
 GPT_api_base = '' # openai.base_url
 
 # use transit url to request gpt(Optional)

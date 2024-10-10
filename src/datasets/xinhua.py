@@ -29,11 +29,32 @@ class Xinhua(BaseDataset):
         return stat
 
 
-def get_task_datasets(path: str, task: str, shuffle: bool = False, seed: int = 22):
-    if os.path.isfile(path):
-        with open(path) as f:
-            data = json.load(f)
-    
+def get_task_datasets(path: str, task: str, w_ctx: bool = False, shuffle: bool = False, seed: int = 22):
+    if w_ctx:
+        if task == "all":
+            sub_tasks = ["event_summary", "continuing_writing", "hallu_modified", "questanswer_1doc", "questanswer_2docs", "questanswer_3docs"]
+        elif task == "quest_answer":
+            sub_tasks = ["questanswer_1doc", "questanswer_2docs", "questanswer_3docs"]
+        else:
+            sub_tasks = [task]
+        id2task_name = {
+            "event_summary": "Summary",
+            "continuing_writing": "ContinueWriting",
+            "hallu_modified": "HalluModified",
+            "questanswer_1doc": "QuestAnswer1Doc",
+            "questanswer_2docs": "QuestAnswer2Docs",
+            "questanswer_3docs": "QuestAnswer3Docs"
+        }
+        data = dict()
+        for sub_task in sub_tasks:
+            sub_task_path = path.replace('split_merged', f'split_{id2task_name[sub_task]}_w_ctx')
+            with open(sub_task_path) as fr:
+                data[sub_task] = json.load(fr)
+    else:
+        if os.path.isfile(path):
+            with open(path) as f:
+                data = json.load(f)
+        
     if task == "all":
         return [
             Xinhua(data["event_summary"], shuffle, seed), 

@@ -4,7 +4,7 @@ from operator import itemgetter
 
 from llama_index.schema import TextNode
 from llama_index.schema import NodeWithScore
-from llama_index.retrievers import BaseRetriever
+# from llama_index.retrievers import BaseRetriever
 from llama_index.indices.query.schema import QueryType
 from langchain.schema.embeddings import Embeddings
 
